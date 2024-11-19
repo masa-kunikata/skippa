@@ -18,6 +18,11 @@ ActiveRecord::Schema.define(version: 20180522032741) do
     t.string "password", limit: 255, default: "", null: false
   end
 
+  create_table "tbl", force: :cascade do |t|
+    t.string "col", limit: 255, default: "", null: false
+    t.index ["col"], name: "index_col_on_tbl"
+  end
+
   add_index "users", ["email"], name: "index_users_on_email", unique: true, using: :btree
 end
 __EOD__
@@ -34,10 +39,10 @@ __EOD__
   end
 
   def test_tables
-    assert_equal ["access_log", "users"], @schema.tables.map(&:name)
+    assert_equal ["access_log", "users", "tbl"], @schema.tables.map(&:name)
   end
 
   def test_indexes
-    assert_equal ["index_users_on_email"], @schema.indexes.map { |index| index.options["name"] }
+    assert_equal ["index_col_on_tbl", "index_users_on_email"], @schema.indexes.map { |index| index.options["name"] }
   end
 end

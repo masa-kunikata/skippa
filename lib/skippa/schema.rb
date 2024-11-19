@@ -87,10 +87,16 @@ module Skippa
     end
 
     def indexes
-      sexp
+      table_indexes = self.tables
+        .map { |table| table.indexes }
+        .flatten
+
+      add_indexes = sexp
         .dig(2, 2, 1)
         .select { |method_add_block| method_add_block.dig(1, 1) == "add_index" rescue false }
         .map { |method_add_block| Skippa::Index.parse(method_add_block)}
+
+      [*table_indexes, *add_indexes]
     end
   end
 end

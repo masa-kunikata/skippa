@@ -4,6 +4,8 @@ require "skippa/extention"
 require "skippa/table"
 require "skippa/column"
 require "skippa/index"
+require "skippa/table_definition_index"
+require "skippa/table_definition_unique_constraint"
 
 require "ripper"
 

@@ -80,10 +80,35 @@ module Skippa
       Hash[*key_value_array]
     end
 
+    class << self
+      def command_call_type(command_call)
+        case command_call.dig(3, 1)
+        when "index" then :index
+        when "unique_constraint" then :unique_constraint
+        else :column
+        end
+      end
+    end
+
     def columns
       sexp
         .dig(2, 2, 1)
+        .select { |command_call| Skippa::Table.command_call_type(command_call) == :column }
         .map { |command_call| Skippa::Column.parse(command_call) }
+    end
+
+    def indexes
+      sexp
+        .dig(2, 2, 1)
+        .select { |command_call| Skippa::Table.command_call_type(command_call) == :index }
+        .map { |command_call| Skippa::TableDefinitionIndex.parse(command_call, self.name) }
+    end
+
+    def unique_constraints
+      sexp
+        .dig(2, 2, 1)
+        .select { |command_call| Skippa::Table.command_call_type(command_call) == :unique_constraint }
+        .map { |command_call| Skippa::TableDefinitionUniqueConstraint.parse(command_call, self.name) }
     end
   end
 end
